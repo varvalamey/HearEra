@@ -20,10 +20,6 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        // Make paypal link clickable
-        TextView paypalLinkTV = findViewById(R.id.paypal_link_tv);
-        paypalLinkTV.setMovementMethod(LinkMovementMethod.getInstance());
-
         mVersionName = findViewById(R.id.about_text_tv);
 
         // Extract the version name of the app

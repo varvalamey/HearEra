@@ -130,14 +130,11 @@ public class PlayActivity extends AppCompatActivity {
 
         mPlayIV = findViewById(R.id.play_play);
 
-        mBackward1IV = findViewById(R.id.backward_1_iv);
         mBackward2IV = findViewById(R.id.backward_2_iv);
         mForward1IV = findViewById(R.id.forward_1_iv);
-        mForward2IV = findViewById(R.id.forward_2_iv);
-        mBackward1TV = findViewById(R.id.backward_1_tv);
         mBackward2TV = findViewById(R.id.backward_2_tv);
         mForward1TV = findViewById(R.id.forward_1_tv);
-        mForward2TV = findViewById(R.id.forward_2_tv);
+
 
         mSeekBar = findViewById(R.id.play_seekbar);
         mCompletedTimeTV = findViewById(R.id.play_completed_time);
