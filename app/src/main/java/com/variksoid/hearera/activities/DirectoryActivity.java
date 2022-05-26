@@ -41,16 +41,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class DirectoryActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks<Cursor>, SynchronizationStateListener {
-    //firebase переменные
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference storageRef = storage.getReference().child("files");
-    ArrayList<StorageReference> firebaseFilesUrls;
-    final long SIX_MEGABYTES = 1024 * 1024 * 6;
-
-
-
-
-
 
 
     // CursorLoader переменные
@@ -116,29 +106,6 @@ public class DirectoryActivity extends AppCompatActivity  implements LoaderManag
             addDirectory(true);
             addDirectoryFAM.collapse();
         });
-
-        //получаем список всех файлов в firebase
-        storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-            @Override
-            public void onSuccess(ListResult listResult){
-                for (StorageReference item : listResult.getItems()) {
-                    //Add code to save images here
-                    firebaseFilesUrls.add(item);
-                }
-
-                for (StorageReference audioRef : firebaseFilesUrls) {
-                    File baseDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-                    final File theAudio = new File(baseDirectory, "aud1");
-
-                    Task task = audioRef.getFile(theAudio);
-                    task.addOnSuccessListener(new OnSuccessListener() {
-                        @Override
-                        public void onSuccess(Object o) {
-                        }
-                    });
-
-                }
-            }});
 
 
         // Используйте ListView и CursorAdapter для повторного использования пространства
