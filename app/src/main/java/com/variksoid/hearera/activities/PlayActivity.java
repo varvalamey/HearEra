@@ -44,7 +44,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.variksoid.hearera.R;
 import com.variksoid.hearera.adapters.BookmarkCursorAdapter;
-import com.variksoid.hearera.data.AnchorContract;
+import com.variksoid.hearera.data.HearEraContract;
 import com.variksoid.hearera.helpers.SleepTimer;
 import com.variksoid.hearera.models.AudioFile;
 import com.variksoid.hearera.models.Bookmark;
@@ -458,7 +458,7 @@ public class PlayActivity extends AppCompatActivity {
 
     private void storeAudioFiles() {
         // Хранение Serializable audioList в SharedPreferences
-        String sortOrder = "CAST(" + AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_TITLE + " as SIGNED) ASC, LOWER(" + AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_TITLE + ") ASC";
+        String sortOrder = "CAST(" + HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_TITLE + " as SIGNED) ASC, LOWER(" + HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_TITLE + ") ASC";
 
         ArrayList<AudioFile> audioList = AudioFile.getAllAudioFilesInAlbum(this, mAudioFile.getAlbumId(), sortOrder);
         mAudioIdList = new ArrayList<>();
@@ -847,7 +847,7 @@ public class PlayActivity extends AppCompatActivity {
         });
 
         mBookmarkListView.setOnItemLongClickListener((adapterView, view, i, l) -> {
-            Uri uri = ContentUris.withAppendedId(AnchorContract.BookmarkEntry.CONTENT_URI, l);
+            Uri uri = ContentUris.withAppendedId(HearEraContract.BookmarkEntry.CONTENT_URI, l);
             showSetBookmarkDialog(uri);
             return true;
         });
@@ -996,9 +996,9 @@ public class PlayActivity extends AppCompatActivity {
             mAudioFile.setCompletedTime(newTime);
 
             // Update the completedTime column of the audiofiles table
-            Uri uri = ContentUris.withAppendedId(AnchorContract.AudioEntry.CONTENT_URI, mAudioFile.getID());
+            Uri uri = ContentUris.withAppendedId(HearEraContract.AudioEntry.CONTENT_URI, mAudioFile.getID());
             ContentValues values = new ContentValues();
-            values.put(AnchorContract.AudioEntry.COLUMN_COMPLETED_TIME, newTime);
+            values.put(HearEraContract.AudioEntry.COLUMN_COMPLETED_TIME, newTime);
             getContentResolver().update(uri, values, null, null);
         }
     }

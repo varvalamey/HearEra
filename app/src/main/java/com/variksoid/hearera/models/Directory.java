@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.variksoid.hearera.data.AnchorContract;
+import com.variksoid.hearera.data.HearEraContract;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,9 +41,9 @@ public class Directory {
     private final Type mType;
 
     private static final String[] mDirectoryColumns = new String[] {
-            AnchorContract.DirectoryEntry._ID,
-            AnchorContract.DirectoryEntry.COLUMN_PATH,
-            AnchorContract.DirectoryEntry.COLUMN_TYPE
+            HearEraContract.DirectoryEntry._ID,
+            HearEraContract.DirectoryEntry.COLUMN_PATH,
+            HearEraContract.DirectoryEntry.COLUMN_TYPE
     };
 
     private Directory(long id, String path, int type) {
@@ -76,7 +76,7 @@ public class Directory {
      */
     public long insertIntoDB(Context context) {
         ContentValues values = getContentValues();
-        Uri uri = context.getContentResolver().insert(AnchorContract.DirectoryEntry.CONTENT_URI, values);
+        Uri uri = context.getContentResolver().insert(HearEraContract.DirectoryEntry.CONTENT_URI, values);
 
         if (uri == null) {
             return -1;
@@ -88,8 +88,8 @@ public class Directory {
 
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();
-        values.put(AnchorContract.DirectoryEntry.COLUMN_PATH, mPath);
-        values.put(AnchorContract.DirectoryEntry.COLUMN_TYPE, mType.value);
+        values.put(HearEraContract.DirectoryEntry.COLUMN_PATH, mPath);
+        values.put(HearEraContract.DirectoryEntry.COLUMN_TYPE, mType.value);
         return values;
     }
 
@@ -101,7 +101,7 @@ public class Directory {
      * Retrieve directory with given ID from database
      */
     static Directory getDirectoryByID(Context context, long id) {
-        Uri uri = ContentUris.withAppendedId(AnchorContract.DirectoryEntry.CONTENT_URI, id);
+        Uri uri = ContentUris.withAppendedId(HearEraContract.DirectoryEntry.CONTENT_URI, id);
         Cursor c = context.getContentResolver().query(uri, mDirectoryColumns, null, null, null);
 
         // Bail early if the cursor is null
@@ -126,7 +126,7 @@ public class Directory {
      */
     public static ArrayList<Directory> getDirectories(Context context) {
         ArrayList<Directory> directories = new ArrayList<>();
-        Cursor c = context.getContentResolver().query(AnchorContract.DirectoryEntry.CONTENT_URI, mDirectoryColumns, null, null, null);
+        Cursor c = context.getContentResolver().query(HearEraContract.DirectoryEntry.CONTENT_URI, mDirectoryColumns, null, null, null);
 
         // Bail early if the cursor is null
         if (c == null) {
@@ -149,9 +149,9 @@ public class Directory {
      * Create a Directory from a cursor that is already at the correct position
      */
     private static Directory getDirectoryFromPositionedCursor(Cursor c) {
-        long id = c.getLong(c.getColumnIndexOrThrow(AnchorContract.DirectoryEntry._ID));
-        String path = c.getString(c.getColumnIndexOrThrow(AnchorContract.DirectoryEntry.COLUMN_PATH));
-        int type = c.getInt(c.getColumnIndexOrThrow(AnchorContract.DirectoryEntry.COLUMN_TYPE));
+        long id = c.getLong(c.getColumnIndexOrThrow(HearEraContract.DirectoryEntry._ID));
+        String path = c.getString(c.getColumnIndexOrThrow(HearEraContract.DirectoryEntry.COLUMN_PATH));
+        int type = c.getInt(c.getColumnIndexOrThrow(HearEraContract.DirectoryEntry.COLUMN_TYPE));
         return new Directory(id, path, type);
     }
 }

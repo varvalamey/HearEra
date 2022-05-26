@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.variksoid.hearera.R;
-import com.variksoid.hearera.data.AnchorContract;
+import com.variksoid.hearera.data.HearEraContract;
 import com.variksoid.hearera.listeners.SynchronizationStateListener;
 import com.variksoid.hearera.models.Album;
 import com.variksoid.hearera.models.AudioFile;
@@ -117,7 +117,7 @@ public class Synchronizer {
             if (!keepDeleted || (!showHidden && directoryName.startsWith("."))) {
                 // Delete the album in the albums table
                 long id = oldAlbumPaths.get(path).getID();
-                Uri uri = ContentUris.withAppendedId(AnchorContract.AlbumEntry.CONTENT_URI, id);
+                Uri uri = ContentUris.withAppendedId(HearEraContract.AlbumEntry.CONTENT_URI, id);
                 mContext.getContentResolver().delete(uri, null, null);
             }
         }
@@ -191,7 +191,7 @@ public class Synchronizer {
         for (String title : audioTitles.keySet()) {
             if (!keepDeleted || (!showHidden && title.startsWith("."))) {
                 long id = audioTitles.get(title).getID();
-                Uri uri = ContentUris.withAppendedId(AnchorContract.AudioEntry.CONTENT_URI, id);
+                Uri uri = ContentUris.withAppendedId(HearEraContract.AudioEntry.CONTENT_URI, id);
                 mContext.getContentResolver().delete(uri, null, null);
             }
         }

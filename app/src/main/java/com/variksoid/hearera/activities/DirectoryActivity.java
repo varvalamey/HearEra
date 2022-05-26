@@ -23,9 +23,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 import com.variksoid.hearera.R;
 import com.variksoid.hearera.adapters.DirectoryCursorAdapter;
-import com.variksoid.hearera.data.AnchorContract;
+import com.variksoid.hearera.data.HearEraContract;
 import com.variksoid.hearera.dialogs.FileDialog;
 import com.variksoid.hearera.helpers.Synchronizer;
 import com.variksoid.hearera.listeners.SynchronizationStateListener;
@@ -36,7 +41,16 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class DirectoryActivity extends AppCompatActivity  implements LoaderManager.LoaderCallbacks<Cursor>, SynchronizationStateListener {
-    //Дефолтная дирекория с firebase
+    //firebase переменные
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference().child("files");
+    ArrayList<StorageReference> firebaseFilesUrls;
+    final long SIX_MEGABYTES = 1024 * 1024 * 6;
+
+
+
+
+
 
 
     // CursorLoader variables
@@ -55,9 +69,13 @@ public class DirectoryActivity extends AppCompatActivity  implements LoaderManag
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        firebaseFilesUrls = new ArrayList<>();
+
         Utils.setActivityTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_directory);
+        //addDefaultDirectory();
 
         // Prepare the CursorLoader. Either re-connect with an existing one or start a new one.
         getLoaderManager().initLoader(AUDIO_LOADER, null, this);
@@ -100,6 +118,30 @@ public class DirectoryActivity extends AppCompatActivity  implements LoaderManag
             addDirectoryFAM.collapse();
         });
 
+        //получаем список всех файлов в firebase
+        storageRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+            @Override
+            public void onSuccess(ListResult listResult){
+                for (StorageReference item : listResult.getItems()) {
+                    //Add code to save images here
+                    firebaseFilesUrls.add(item);
+                }
+
+                for (StorageReference audioRef : firebaseFilesUrls) {
+                    File baseDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+                    final File theAudio = new File(baseDirectory, "aud1");
+
+                    Task task = audioRef.getFile(theAudio);
+                    task.addOnSuccessListener(new OnSuccessListener() {
+                        @Override
+                        public void onSuccess(Object o) {
+                        }
+                    });
+
+                }
+            }});
+
+
         // Use a ListView and CursorAdapter to recycle space
         mListView = findViewById(R.id.list);
         mListView.setAdapter(mCursorAdapter);
@@ -120,6 +162,13 @@ public class DirectoryActivity extends AppCompatActivity  implements LoaderManag
                 String menuTitle = getResources().getString(R.string.items_selected, mSelectedDirectories.size());
                 actionMode.setTitle(menuTitle);
             }
+            //
+            //
+
+
+
+
+
 
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
@@ -151,6 +200,9 @@ public class DirectoryActivity extends AppCompatActivity  implements LoaderManag
                 }
             }
 
+
+
+
             @Override
             public void onDestroyActionMode(ActionMode actionMode) {
                 // Make necessary updates to the activity when the CAB is removed
@@ -177,9 +229,35 @@ public class DirectoryActivity extends AppCompatActivity  implements LoaderManag
         fileDialog.showDialog();
     }
 
+
+
+
+
+
+
+
+
+
+    /*private void addDefaultDirectory() {
+        File baseDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
+        File newDefDirectory =  new File(baseDirectory, "Server");
+        File Fall = new File(newDefDirectory, "Осень - Платон Востриков");
+            Directory.Type directoryType = Directory.Type.PARENT_DIR;
+            Directory newDirectory = new Directory(newDefDirectory.getAbsolutePath(), directoryType);
+            if (allowAddDirectory(newDirectory)) {
+                mSynchronizer.addDirectory(newDirectory);
+            }
+                remoteDB.collection("hearera-1b979.appspot.com").get().addOnSuccessListener { querySnapshot ->
+        // Успешно получили данные. Список в querySnapshot.documents
+    }.addOnFailureListener { exception ->
+        // Произошла ошибка при получении данных
+    };
+}
+    }*/
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, AnchorContract.DirectoryEntry.CONTENT_URI, Directory.getColumns(), null, null, null);
+        return new CursorLoader(this, HearEraContract.DirectoryEntry.CONTENT_URI, Directory.getColumns(), null, null, null);
     }
 
     @Override
@@ -218,7 +296,7 @@ public class DirectoryActivity extends AppCompatActivity  implements LoaderManag
             // User clicked the "Ok" button, so delete the directories from the database
             int deletionCount = 0;
             for (long directoryId : selectedDirectoriesArr) {
-                Uri uri = ContentUris.withAppendedId(AnchorContract.DirectoryEntry.CONTENT_URI, directoryId);
+                Uri uri = ContentUris.withAppendedId(HearEraContract.DirectoryEntry.CONTENT_URI, directoryId);
                 getContentResolver().delete(uri, null, null);
                 deletionCount++;
             }
@@ -247,17 +325,7 @@ public class DirectoryActivity extends AppCompatActivity  implements LoaderManag
                 Toast.makeText(getApplicationContext(), directoryExists, Toast.LENGTH_LONG).show();
                 return false;
             }
-            /*
-            else if (dir.getAbsolutePath().startsWith(newDir.getAbsolutePath())) {
-                String directoryExists = getResources().getString(R.string.sub_directory_exists, newDir.getAbsolutePath(), dir.getAbsolutePath());
-                Toast.makeText(getApplicationContext(), directoryExists, Toast.LENGTH_LONG).show();
-                return false;
-            } else if (newDir.getAbsolutePath().startsWith(dir.getAbsolutePath())) {
-                String directoryExists = getResources().getString(R.string.parent_directory_exists, newDir.getAbsolutePath(), dir.getAbsolutePath());
-                Toast.makeText(getApplicationContext(), directoryExists, Toast.LENGTH_LONG).show();
-                return false;
-            }
-             */
+
         }
         return true;
     }

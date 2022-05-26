@@ -1,5 +1,7 @@
 package com.variksoid.hearera.services;
 
+import static androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC;
+
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -27,10 +29,6 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -40,25 +38,27 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.variksoid.hearera.R;
+import com.variksoid.hearera.activities.PlayActivity;
+import com.variksoid.hearera.callbacks.MediaSessionCallback;
+import com.variksoid.hearera.data.HearEraContract;
+import com.variksoid.hearera.helpers.LockManager;
+import com.variksoid.hearera.helpers.SleepTimer;
 import com.variksoid.hearera.listeners.SleepTimerStatusListener;
 import com.variksoid.hearera.models.Album;
 import com.variksoid.hearera.models.AudioFile;
-import com.variksoid.hearera.helpers.LockManager;
 import com.variksoid.hearera.models.Bookmark;
 import com.variksoid.hearera.receivers.MediaButtonIntentReceiver;
-import com.variksoid.hearera.callbacks.MediaSessionCallback;
-import com.variksoid.hearera.R;
-import com.variksoid.hearera.helpers.SleepTimer;
-import com.variksoid.hearera.activities.PlayActivity;
-import com.variksoid.hearera.data.AnchorContract;
 import com.variksoid.hearera.utils.BitmapUtils;
 import com.variksoid.hearera.utils.SkipIntervalUtils;
 import com.variksoid.hearera.utils.StorageUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC;
 
 
 /*
@@ -999,9 +999,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         mActiveAudio.setCompletedTime(getCurrentPosition());
 
         // Update the completedTime column of the audiofiles table
-        Uri uri = ContentUris.withAppendedId(AnchorContract.AudioEntry.CONTENT_URI, mActiveAudio.getID());
+        Uri uri = ContentUris.withAppendedId(HearEraContract.AudioEntry.CONTENT_URI, mActiveAudio.getID());
         ContentValues values = new ContentValues();
-        values.put(AnchorContract.AudioEntry.COLUMN_COMPLETED_TIME, getCurrentPosition());
+        values.put(HearEraContract.AudioEntry.COLUMN_COMPLETED_TIME, getCurrentPosition());
         getContentResolver().update(uri, values, null, null);
     }
 

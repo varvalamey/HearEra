@@ -17,14 +17,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -37,16 +29,25 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.variksoid.hearera.R;
+import com.variksoid.hearera.adapters.AudioFileCursorAdapter;
+import com.variksoid.hearera.data.HearEraContract;
+import com.variksoid.hearera.helpers.Synchronizer;
 import com.variksoid.hearera.listeners.PlayStatusChangeListener;
 import com.variksoid.hearera.listeners.SynchronizationStateListener;
 import com.variksoid.hearera.models.Album;
 import com.variksoid.hearera.models.AudioFile;
 import com.variksoid.hearera.receivers.PlayStatusReceiver;
 import com.variksoid.hearera.services.MediaPlayerService;
-import com.variksoid.hearera.R;
-import com.variksoid.hearera.helpers.Synchronizer;
-import com.variksoid.hearera.adapters.AudioFileCursorAdapter;
-import com.variksoid.hearera.data.AnchorContract;
 import com.variksoid.hearera.utils.BitmapUtils;
 import com.variksoid.hearera.utils.DBAccessUtils;
 import com.variksoid.hearera.utils.StorageUtil;
@@ -105,42 +106,42 @@ public class AlbumActivity extends AppCompatActivity implements LoaderManager.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
 
-        // Get the uri of the recipe sent via the intent
+        // Получение uri
         long albumId = getIntent().getLongExtra(getString(R.string.album_id), -1);
         mAlbum = Album.getAlbumByID(this, albumId);
 
-        // Prepare the CursorLoader. Either re-connect with an existing one or start a new one.
+        // Подготовка CursorLoader. Либо переподключение к старому, либо создание нового
         getLoaderManager().initLoader(ALBUM_LOADER, null, this);
 
-        // Set up the shared preferences.
+        // Установка shared preferece
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mDarkTheme = mPrefs.getBoolean(getString(R.string.settings_dark_key), Boolean.getBoolean(getString(R.string.settings_dark_default)));
         mShowHiddenFiles = mPrefs.getBoolean(getString(R.string.settings_show_hidden_key), Boolean.getBoolean(getString(R.string.settings_show_hidden_default)));
 
-        // Initialize the cursor adapter
+        // Инициализация курсора
         mCursorAdapter = new AudioFileCursorAdapter(this, null);
 
-        // Initialize synchronizer
+        // Инициализация синхронайзера
         mSynchronizer = new Synchronizer(this);
         mSynchronizer.setListener(this);
 
-        // Set up the views
+        // Установка views
         mAlbumInfoTitleTV = findViewById(R.id.album_info_title);
         mAlbumInfoTimeTV = findViewById(R.id.album_info_time);
         mAlbumInfoCoverIV = findViewById(R.id.album_info_cover);
         mPlayPauseFAB = findViewById(R.id.play_pause_fab);
 
-        // Use a ListView and CursorAdapter to recycle space
+        // Используем ListView и CursorAdapter для переработки пространства
         mListView = findViewById(R.id.list_album);
         mListView.setAdapter(mCursorAdapter);
 
-        // Set the EmptyView for the ListView
+        // Установка EmptyView для ListView
         mEmptyTV = findViewById(R.id.emptyList_album);
         mListView.setEmptyView(mEmptyTV);
 
-        // Implement onItemClickListener for the list view
+        // Наследование onItemClickListener для list view
         mListView.setOnItemClickListener((adapterView, view, i, rowId) -> {
-            // Check if the audio file exists
+            // Проверка если файл уже существует
             AudioFile audio = AudioFile.getAudioFileById(AlbumActivity.this, rowId);
 
             if (audio == null || !(new File(audio.getPath())).exists()) {
@@ -148,9 +149,9 @@ public class AlbumActivity extends AppCompatActivity implements LoaderManager.Lo
                 return;
             }
 
-            // If the MediaPlayerService is bound, check if it is playing the file that was
-            // clicked. If not, stop the current service and let the PlayActivity start a new
-            // one
+            // Если MediaPlayerService привязан, проверить если проигрываемый файл бын нажат
+            // Если нет, открыть новый
+
             if (mServiceBound && mPlayer.getCurrentAudioFile().getID() != audio.getID()) {
                 Log.e("AlbumActivity", "Unbinding Service ");
                 unbindService(serviceConnection);
@@ -159,13 +160,13 @@ public class AlbumActivity extends AppCompatActivity implements LoaderManager.Lo
                 mPlayer.stopSelf();
             }
 
-            // When returning to the Album or MainActivity next time, the service should be
-            // bound again (unless the notification was removed in which case the flag is set to
-            // true in the RemoveNotificationReceiver)
+            // При возвращении к Album или MainActivity  в следующий раз сервис не должен быть привязан
+            // (за исключением случая когда уведомление было убрано, тогда флад отмечен 1 в
+            // RemoveNotificationReceiver)
             mDoNotBindService = false;
             LocalBroadcastManager.getInstance(AlbumActivity.this).sendBroadcast(new Intent(MediaPlayerService.BROADCAST_RESET));
 
-            // Open the PlayActivity for the clicked audio file
+            // Открыть PlayActivity для нажатого файла
             Intent intent = new Intent(AlbumActivity.this, PlayActivity.class);
             intent.putExtra(getString(R.string.curr_audio_id), rowId);
             startActivity(intent);
@@ -326,15 +327,15 @@ public class AlbumActivity extends AppCompatActivity implements LoaderManager.Lo
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String[] projection = {
-                AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry._ID,
-                AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_TITLE,
+                HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry._ID,
+                HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_TITLE,
         };
 
-        String sel = AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_ALBUM + "=?";
+        String sel = HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_ALBUM + "=?";
         String[] selArgs = {Long.toString(mAlbum.getID())};
-        String sortOrder = "CAST(" + AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_TITLE + " as SIGNED) ASC, LOWER(" + AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_TITLE + ") ASC";
+        String sortOrder = "CAST(" + HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_TITLE + " as SIGNED) ASC, LOWER(" + HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_TITLE + ") ASC";
 
-        return new CursorLoader(this, AnchorContract.AudioEntry.CONTENT_URI, projection, sel, selArgs, sortOrder);
+        return new CursorLoader(this, HearEraContract.AudioEntry.CONTENT_URI, projection, sel, selArgs, sortOrder);
     }
 
     @Override
@@ -541,8 +542,8 @@ public class AlbumActivity extends AppCompatActivity implements LoaderManager.Lo
         int scrollTo = 0;
         c.moveToFirst();
         while (c.moveToNext()) {
-            int duration = c.getInt(c.getColumnIndexOrThrow(AnchorContract.AudioEntry.COLUMN_TIME));
-            int completed = c.getInt(c.getColumnIndexOrThrow(AnchorContract.AudioEntry.COLUMN_COMPLETED_TIME));
+            int duration = c.getInt(c.getColumnIndexOrThrow(HearEraContract.AudioEntry.COLUMN_TIME));
+            int completed = c.getInt(c.getColumnIndexOrThrow(HearEraContract.AudioEntry.COLUMN_COMPLETED_TIME));
             if (completed < duration || duration == 0) {
                 break;
             }
@@ -562,7 +563,7 @@ public class AlbumActivity extends AppCompatActivity implements LoaderManager.Lo
         int scrollTo = 0;
         c.moveToFirst();
         while (c.moveToNext()) {
-            long id = c.getLong(c.getColumnIndexOrThrow(AnchorContract.AudioEntry._ID));
+            long id = c.getLong(c.getColumnIndexOrThrow(HearEraContract.AudioEntry._ID));
             if (id == lastPlayedID) {
                 scrollTo = count;
                 break;

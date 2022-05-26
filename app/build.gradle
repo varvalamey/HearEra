@@ -53,7 +53,7 @@ dependencies {
 
 // Gson
     implementation 'com.google.code.gson:gson:2.9.0'
-    implementation 'com.google.firebase:firebase-storage:20.0.1'
+
 
 // Test
     testImplementation 'junit:junit:4.13.2'
@@ -63,7 +63,6 @@ dependencies {
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:30.0.2')
 
-    // Declare the dependency for the Realtime Database library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-storage:18.1.1'
+
 }

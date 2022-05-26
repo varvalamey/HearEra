@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.variksoid.hearera.data.AnchorContract;
+import com.variksoid.hearera.data.HearEraContract;
 import com.variksoid.hearera.utils.Utils;
 
 import java.io.File;
@@ -21,11 +21,11 @@ public class Album {
     private long mLastPlayedID;
 
     private static final String[] mAlbumColumns = new String[]{
-            AnchorContract.AlbumEntry._ID,
-            AnchorContract.AlbumEntry.COLUMN_TITLE,
-            AnchorContract.AlbumEntry.COLUMN_DIRECTORY,
-            AnchorContract.AlbumEntry.COLUMN_COVER_PATH,
-            AnchorContract.AlbumEntry.COLUMN_LAST_PLAYED
+            HearEraContract.AlbumEntry._ID,
+            HearEraContract.AlbumEntry.COLUMN_TITLE,
+            HearEraContract.AlbumEntry.COLUMN_DIRECTORY,
+            HearEraContract.AlbumEntry.COLUMN_COVER_PATH,
+            HearEraContract.AlbumEntry.COLUMN_LAST_PLAYED
     };
 
     public Album(long id, String title, Directory directory, String coverPath, long lastPlayed) {
@@ -126,7 +126,7 @@ public class Album {
      */
     public long insertIntoDB(Context context) {
         ContentValues values = getContentValues();
-        Uri uri = context.getContentResolver().insert(AnchorContract.AlbumEntry.CONTENT_URI, values);
+        Uri uri = context.getContentResolver().insert(HearEraContract.AlbumEntry.CONTENT_URI, values);
 
         if (uri == null) {
             return -1;
@@ -143,7 +143,7 @@ public class Album {
         if (mID == -1) {
             return ;
         }
-        Uri uri = ContentUris.withAppendedId(AnchorContract.AlbumEntry.CONTENT_URI, mID);
+        Uri uri = ContentUris.withAppendedId(HearEraContract.AlbumEntry.CONTENT_URI, mID);
         ContentValues values = getContentValues();
         context.getContentResolver().update(uri, values, null, null);
     }
@@ -153,10 +153,10 @@ public class Album {
      */
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();
-        values.put(AnchorContract.AlbumEntry.COLUMN_TITLE, mTitle);
-        values.put(AnchorContract.AlbumEntry.COLUMN_DIRECTORY, mDirectory.getID());
-        values.put(AnchorContract.AlbumEntry.COLUMN_COVER_PATH, mCoverPath);
-        values.put(AnchorContract.AlbumEntry.COLUMN_LAST_PLAYED, mLastPlayedID);
+        values.put(HearEraContract.AlbumEntry.COLUMN_TITLE, mTitle);
+        values.put(HearEraContract.AlbumEntry.COLUMN_DIRECTORY, mDirectory.getID());
+        values.put(HearEraContract.AlbumEntry.COLUMN_COVER_PATH, mCoverPath);
+        values.put(HearEraContract.AlbumEntry.COLUMN_LAST_PLAYED, mLastPlayedID);
         return values;
     }
 
@@ -164,7 +164,7 @@ public class Album {
      * Retrieve album with given ID from database
      */
     static public Album getAlbumByID(Context context, long id) {
-        Uri uri = ContentUris.withAppendedId(AnchorContract.AlbumEntry.CONTENT_URI, id);
+        Uri uri = ContentUris.withAppendedId(HearEraContract.AlbumEntry.CONTENT_URI, id);
         Cursor c = context.getContentResolver().query(uri, mAlbumColumns, null, null, null);
 
         // Bail early if the cursor is null
@@ -190,10 +190,10 @@ public class Album {
      */
     public static ArrayList<Album> getAllAlbumsInDirectory(Context context, long directoryId) {
         ArrayList<Album> albums = new ArrayList<>();
-        String sel = AnchorContract.AlbumEntry.COLUMN_DIRECTORY + "=?";
+        String sel = HearEraContract.AlbumEntry.COLUMN_DIRECTORY + "=?";
         String[] selArgs = {Long.toString(directoryId)};
 
-        Cursor c = context.getContentResolver().query(AnchorContract.AlbumEntry.CONTENT_URI,
+        Cursor c = context.getContentResolver().query(HearEraContract.AlbumEntry.CONTENT_URI,
                 mAlbumColumns, sel, selArgs, null, null);
 
         // Bail early if the cursor is null
@@ -214,14 +214,14 @@ public class Album {
     }
 
     private static Album getAlbumFromPositionedCursor(Context context, Cursor c) {
-        long id = c.getLong(c.getColumnIndexOrThrow(AnchorContract.AlbumEntry._ID));
-        String title = c.getString(c.getColumnIndexOrThrow(AnchorContract.AlbumEntry.COLUMN_TITLE));
-        long directoryId = c.getLong(c.getColumnIndexOrThrow(AnchorContract.AlbumEntry.COLUMN_DIRECTORY));
+        long id = c.getLong(c.getColumnIndexOrThrow(HearEraContract.AlbumEntry._ID));
+        String title = c.getString(c.getColumnIndexOrThrow(HearEraContract.AlbumEntry.COLUMN_TITLE));
+        long directoryId = c.getLong(c.getColumnIndexOrThrow(HearEraContract.AlbumEntry.COLUMN_DIRECTORY));
         Directory directory = Directory.getDirectoryByID(context, directoryId);
-        String coverPath = c.getString(c.getColumnIndexOrThrow(AnchorContract.AlbumEntry.COLUMN_COVER_PATH));
+        String coverPath = c.getString(c.getColumnIndexOrThrow(HearEraContract.AlbumEntry.COLUMN_COVER_PATH));
         long lastPlayed = -1;
-        if (!c.isNull(c.getColumnIndexOrThrow(AnchorContract.AlbumEntry.COLUMN_LAST_PLAYED))) {
-            lastPlayed = c.getLong(c.getColumnIndexOrThrow(AnchorContract.AlbumEntry.COLUMN_LAST_PLAYED));
+        if (!c.isNull(c.getColumnIndexOrThrow(HearEraContract.AlbumEntry.COLUMN_LAST_PLAYED))) {
+            lastPlayed = c.getLong(c.getColumnIndexOrThrow(HearEraContract.AlbumEntry.COLUMN_LAST_PLAYED));
         }
         return new Album(id, title, directory, coverPath, lastPlayed);
     }

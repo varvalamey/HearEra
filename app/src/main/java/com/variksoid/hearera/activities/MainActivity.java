@@ -1,61 +1,61 @@
  package com.variksoid.hearera.activities;
 
-import android.Manifest;
-import android.app.LoaderManager;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.Loader;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.IBinder;
-import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+ import android.Manifest;
+ import android.app.LoaderManager;
+ import android.content.BroadcastReceiver;
+ import android.content.ComponentName;
+ import android.content.Context;
+ import android.content.CursorLoader;
+ import android.content.Intent;
+ import android.content.IntentFilter;
+ import android.content.Loader;
+ import android.content.ServiceConnection;
+ import android.content.SharedPreferences;
+ import android.content.pm.PackageInfo;
+ import android.content.pm.PackageManager;
+ import android.database.Cursor;
+ import android.os.Bundle;
+ import android.os.Environment;
+ import android.os.Handler;
+ import android.os.IBinder;
+ import android.preference.PreferenceManager;
+ import android.util.Log;
+ import android.view.ActionMode;
+ import android.view.Menu;
+ import android.view.MenuItem;
+ import android.view.View;
+ import android.widget.AbsListView;
+ import android.widget.ListView;
+ import android.widget.ProgressBar;
+ import android.widget.TextView;
+ import android.widget.Toast;
 
-import com.variksoid.hearera.dialogs.FileDialog;
-import com.variksoid.hearera.helpers.Migrator;
-import com.variksoid.hearera.listeners.PlayStatusChangeListener;
-import com.variksoid.hearera.listeners.SynchronizationStateListener;
-import com.variksoid.hearera.models.Album;
-import com.variksoid.hearera.models.AudioFile;
-import com.variksoid.hearera.receivers.PlayStatusReceiver;
-import com.variksoid.hearera.services.MediaPlayerService;
-import com.variksoid.hearera.R;
-import com.variksoid.hearera.helpers.Synchronizer;
-import com.variksoid.hearera.adapters.AlbumCursorAdapter;
-import com.variksoid.hearera.data.AnchorContract;
-import com.variksoid.hearera.utils.DBAccessUtils;
-import com.variksoid.hearera.utils.Utils;
+ import androidx.annotation.NonNull;
+ import androidx.appcompat.app.AlertDialog;
+ import androidx.appcompat.app.AppCompatActivity;
+ import androidx.core.app.ActivityCompat;
+ import androidx.core.content.ContextCompat;
+ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.io.File;
+ import com.google.android.material.floatingactionbutton.FloatingActionButton;
+ import com.variksoid.hearera.R;
+ import com.variksoid.hearera.adapters.AlbumCursorAdapter;
+ import com.variksoid.hearera.data.HearEraContract;
+ import com.variksoid.hearera.dialogs.FileDialog;
+ import com.variksoid.hearera.helpers.Migrator;
+ import com.variksoid.hearera.helpers.Synchronizer;
+ import com.variksoid.hearera.listeners.PlayStatusChangeListener;
+ import com.variksoid.hearera.listeners.SynchronizationStateListener;
+ import com.variksoid.hearera.models.Album;
+ import com.variksoid.hearera.models.AudioFile;
+ import com.variksoid.hearera.receivers.PlayStatusReceiver;
+ import com.variksoid.hearera.services.MediaPlayerService;
+ import com.variksoid.hearera.utils.DBAccessUtils;
+ import com.variksoid.hearera.utils.Utils;
 
-import java.util.ArrayList;
+ import java.io.File;
+ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>, PlayStatusChangeListener, SynchronizationStateListener {
@@ -289,10 +289,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         String sortOrderPref = mSharedPreferences.getString(getString(R.string.settings_sort_order_key), getString(R.string.settings_sort_order_default));
         String sortOrder = "";
         if (sortOrderPref.equals(getString(R.string.settings_sort_order_by_directory_value))) {
-            sortOrder += AnchorContract.AlbumEntry.COLUMN_DIRECTORY + " ASC, ";
+            sortOrder += HearEraContract.AlbumEntry.COLUMN_DIRECTORY + " ASC, ";
         }
-        sortOrder += "CAST(" + AnchorContract.AlbumEntry.COLUMN_TITLE + " as SIGNED) ASC, LOWER(" + AnchorContract.AlbumEntry.COLUMN_TITLE + ") ASC";
-        return new CursorLoader(this, AnchorContract.AlbumEntry.CONTENT_URI, Album.getColumns(), null, null, sortOrder);
+        sortOrder += "CAST(" + HearEraContract.AlbumEntry.COLUMN_TITLE + " as SIGNED) ASC, LOWER(" + HearEraContract.AlbumEntry.COLUMN_TITLE + ") ASC";
+        return new CursorLoader(this, HearEraContract.AlbumEntry.CONTENT_URI, Album.getColumns(), null, null, sortOrder);
     }
 
     @Override
@@ -319,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 while (true) {
-                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(AnchorContract.AlbumEntry._ID));
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(HearEraContract.AlbumEntry._ID));
                     currPosition++;
                     if (id == albumId) {
                         mCurrPlayingAlbumPosition = currPosition;

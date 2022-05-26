@@ -10,8 +10,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.variksoid.hearera.R;
-import com.variksoid.hearera.data.AnchorContract;
-import com.variksoid.hearera.data.AnchorDbHelper;
+import com.variksoid.hearera.data.HearEraContract;
+import com.variksoid.hearera.data.HearEraDbHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +35,7 @@ public class Migrator {
             File dbFileWal = new File(dbFile + "-wal");
             File[] importFiles = {dbFile, dbFileShm, dbFileWal};
 
-            SQLiteDatabase db = mContext.openOrCreateDatabase(AnchorDbHelper.DATABASE_NAME, Context.MODE_PRIVATE, null);
+            SQLiteDatabase db = mContext.openOrCreateDatabase(HearEraDbHelper.DATABASE_NAME, Context.MODE_PRIVATE, null);
             String newDBPath = db.getPath();
             db.close();
 
@@ -63,22 +63,22 @@ public class Migrator {
                 // import of dbs that were exported in a previous version with the full path names
                 // Get the old cover path
                 String[] proj = new String[]{
-                        AnchorContract.AlbumEntry._ID,
-                        AnchorContract.AlbumEntry.COLUMN_COVER_PATH};
-                Cursor c = mContext.getContentResolver().query(AnchorContract.AlbumEntry.CONTENT_URI,
+                        HearEraContract.AlbumEntry._ID,
+                        HearEraContract.AlbumEntry.COLUMN_COVER_PATH};
+                Cursor c = mContext.getContentResolver().query(HearEraContract.AlbumEntry.CONTENT_URI,
                         proj, null, null, null);
                 if (c != null) {
                     if (c.getCount() > 0) {
                         c.moveToFirst();
                         while (c.moveToNext()) {
-                            String oldCoverPath = c.getString(c.getColumnIndexOrThrow(AnchorContract.AlbumEntry.COLUMN_COVER_PATH));
-                            int id = c.getInt(c.getColumnIndexOrThrow(AnchorContract.AlbumEntry._ID));
+                            String oldCoverPath = c.getString(c.getColumnIndexOrThrow(HearEraContract.AlbumEntry.COLUMN_COVER_PATH));
+                            int id = c.getInt(c.getColumnIndexOrThrow(HearEraContract.AlbumEntry._ID));
                             if (oldCoverPath != null && !oldCoverPath.isEmpty()) {
                                 // Replace the old cover path in the database by the new relative path
                                 String newCoverPath = new File(oldCoverPath).getName();
                                 ContentValues values = new ContentValues();
-                                values.put(AnchorContract.AlbumEntry.COLUMN_COVER_PATH, newCoverPath);
-                                Uri albumUri = ContentUris.withAppendedId(AnchorContract.AlbumEntry.CONTENT_URI, id);
+                                values.put(HearEraContract.AlbumEntry.COLUMN_COVER_PATH, newCoverPath);
+                                Uri albumUri = ContentUris.withAppendedId(HearEraContract.AlbumEntry.CONTENT_URI, id);
                                 mContext.getContentResolver().update(albumUri, values, null, null);
                             }
                         }
@@ -90,9 +90,9 @@ public class Migrator {
 
             // Make sure onUpgrade() is called in case a database of version 1 or 2 was imported
             // onUpgrade() is called when getReadableDatabase() or getWriteableDatabase() is called
-            // We need a new instance of AnchorDbHelper here, not completely sure why, something
+            // We need a new instance of HearEraDbHelper here, not completely sure why, something
             // about the version number probably
-            AnchorDbHelper dbHelper = new AnchorDbHelper(mContext);
+            HearEraDbHelper dbHelper = new HearEraDbHelper(mContext);
             dbHelper.getWritableDatabase();
         } catch (Exception e) {
             Toast.makeText(mContext.getApplicationContext(), R.string.import_fail, Toast.LENGTH_LONG).show();
@@ -107,7 +107,7 @@ public class Migrator {
     public void exportDatabase(File directory) {
         try {
             if (directory.canWrite()) {
-                String currentDBPath = mContext.openOrCreateDatabase(AnchorDbHelper.DATABASE_NAME, Context.MODE_PRIVATE, null).getPath();
+                String currentDBPath = mContext.openOrCreateDatabase(HearEraDbHelper.DATABASE_NAME, Context.MODE_PRIVATE, null).getPath();
 
                 File currentDB = new File(currentDBPath);
                 File currentDBShm = new File(currentDBPath + "-shm");

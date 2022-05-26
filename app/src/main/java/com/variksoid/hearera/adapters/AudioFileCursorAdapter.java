@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.variksoid.hearera.R;
-import com.variksoid.hearera.data.AnchorContract;
+import com.variksoid.hearera.data.HearEraContract;
 import com.variksoid.hearera.models.AudioFile;
 import com.variksoid.hearera.utils.StorageUtil;
 import com.variksoid.hearera.utils.Utils;
@@ -47,7 +47,7 @@ public class AudioFileCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Get the path to the audio file
-        long audioID = cursor.getLong(cursor.getColumnIndexOrThrow(AnchorContract.AudioEntry._ID));
+        long audioID = cursor.getLong(cursor.getColumnIndexOrThrow(HearEraContract.AudioEntry._ID));
         AudioFile audioFile = AudioFile.getAudioFileById(mContext, audioID);
 
         // Get the title of the current audio file and set this text to the titleTV

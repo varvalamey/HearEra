@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 
-import com.variksoid.hearera.data.AnchorContract;
+import com.variksoid.hearera.data.HearEraContract;
 
 import java.io.File;
 import java.io.Serializable;
@@ -22,11 +22,11 @@ public class AudioFile implements Serializable {
     private int mCompletedTime;
 
     private static final String[] mAudioFileColumns = {
-                AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry._ID,
-                AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_TITLE,
-                AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_ALBUM,
-                AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_TIME,
-                AnchorContract.AudioEntry.TABLE_NAME + "." + AnchorContract.AudioEntry.COLUMN_COMPLETED_TIME
+                HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry._ID,
+                HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_TITLE,
+                HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_ALBUM,
+                HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_TIME,
+                HearEraContract.AudioEntry.TABLE_NAME + "." + HearEraContract.AudioEntry.COLUMN_COMPLETED_TIME
     };
 
     private AudioFile(Context context, long id, String title, long albumId, int time, int completedTime) {
@@ -101,10 +101,10 @@ public class AudioFile implements Serializable {
      */
     public long insertIntoDB(Context context) {
         ContentValues values = new ContentValues();
-        values.put(AnchorContract.AudioEntry.COLUMN_TITLE, mTitle);
-        values.put(AnchorContract.AudioEntry.COLUMN_ALBUM, mAlbum.getID());
-        values.put(AnchorContract.AudioEntry.COLUMN_TIME, mTime);
-        Uri uri = context.getContentResolver().insert(AnchorContract.AudioEntry.CONTENT_URI, values);
+        values.put(HearEraContract.AudioEntry.COLUMN_TITLE, mTitle);
+        values.put(HearEraContract.AudioEntry.COLUMN_ALBUM, mAlbum.getID());
+        values.put(HearEraContract.AudioEntry.COLUMN_TIME, mTime);
+        Uri uri = context.getContentResolver().insert(HearEraContract.AudioEntry.CONTENT_URI, values);
 
         if (uri == null) {
             return -1;
@@ -118,7 +118,7 @@ public class AudioFile implements Serializable {
      * Retrieve audio file with given ID from database
      */
     public static AudioFile getAudioFileById(Context context, long id) {
-        Uri uri = ContentUris.withAppendedId(AnchorContract.AudioEntry.CONTENT_URI, id);
+        Uri uri = ContentUris.withAppendedId(HearEraContract.AudioEntry.CONTENT_URI, id);
         Cursor c = context.getContentResolver().query(uri, mAudioFileColumns, null, null, null);
 
         if (c == null) {
@@ -142,10 +142,10 @@ public class AudioFile implements Serializable {
      */
     public static ArrayList<AudioFile> getAllAudioFilesInAlbum(Context context, long albumId, String sortOrder) {
         ArrayList<AudioFile> audioFiles = new ArrayList<>();
-        String sel = AnchorContract.AudioEntry.COLUMN_ALBUM + "=?";
+        String sel = HearEraContract.AudioEntry.COLUMN_ALBUM + "=?";
         String[] selArgs = {Long.toString(albumId)};
 
-        Cursor c = context.getContentResolver().query(AnchorContract.AudioEntry.CONTENT_URI,
+        Cursor c = context.getContentResolver().query(HearEraContract.AudioEntry.CONTENT_URI,
                 mAudioFileColumns, sel, selArgs, sortOrder, null);
 
         // Bail early if the cursor is null
@@ -169,11 +169,11 @@ public class AudioFile implements Serializable {
      * Create an Audio File from a cursor that is already at the correct position
      */
     private static AudioFile getAudioFileFromPositionedCursor(Context context, Cursor c) {
-        long id = c.getLong(c.getColumnIndexOrThrow(AnchorContract.AudioEntry._ID));
-        String title = c.getString(c.getColumnIndexOrThrow(AnchorContract.AudioEntry.COLUMN_TITLE));
-        long albumId = c.getLong(c.getColumnIndexOrThrow(AnchorContract.AudioEntry.COLUMN_ALBUM));
-        int completedTime = c.getInt(c.getColumnIndexOrThrow(AnchorContract.AudioEntry.COLUMN_COMPLETED_TIME));
-        int time = c.getInt(c.getColumnIndexOrThrow(AnchorContract.AudioEntry.COLUMN_TIME));
+        long id = c.getLong(c.getColumnIndexOrThrow(HearEraContract.AudioEntry._ID));
+        String title = c.getString(c.getColumnIndexOrThrow(HearEraContract.AudioEntry.COLUMN_TITLE));
+        long albumId = c.getLong(c.getColumnIndexOrThrow(HearEraContract.AudioEntry.COLUMN_ALBUM));
+        int completedTime = c.getInt(c.getColumnIndexOrThrow(HearEraContract.AudioEntry.COLUMN_COMPLETED_TIME));
+        int time = c.getInt(c.getColumnIndexOrThrow(HearEraContract.AudioEntry.COLUMN_TIME));
         return new AudioFile(context, id, title, albumId, time, completedTime);
     }
 }

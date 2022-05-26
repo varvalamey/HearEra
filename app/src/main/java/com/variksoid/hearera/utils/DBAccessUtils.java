@@ -9,9 +9,9 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
-import com.variksoid.hearera.models.AudioFile;
 import com.variksoid.hearera.R;
-import com.variksoid.hearera.data.AnchorContract;
+import com.variksoid.hearera.data.HearEraContract;
+import com.variksoid.hearera.models.AudioFile;
 
 import java.io.File;
 
@@ -22,11 +22,11 @@ public class DBAccessUtils {
      */
     public static int[] getAlbumTimes(Context context, long albumID) {
         // Query the database for the track completion times
-        String[] columns = new String[]{AnchorContract.AudioEntry.COLUMN_COMPLETED_TIME, AnchorContract.AudioEntry.COLUMN_TIME};
-        String sel = AnchorContract.AudioEntry.COLUMN_ALBUM + "=?";
+        String[] columns = new String[]{HearEraContract.AudioEntry.COLUMN_COMPLETED_TIME, HearEraContract.AudioEntry.COLUMN_TIME};
+        String sel = HearEraContract.AudioEntry.COLUMN_ALBUM + "=?";
         String[] selArgs = {Long.toString(albumID)};
 
-        Cursor c = context.getContentResolver().query(AnchorContract.AudioEntry.CONTENT_URI,
+        Cursor c = context.getContentResolver().query(HearEraContract.AudioEntry.CONTENT_URI,
                 columns, sel, selArgs, null, null);
 
         int[] times = new int[2];
@@ -42,8 +42,8 @@ public class DBAccessUtils {
         int sumDuration = 0;
         int sumCompletedTime = 0;
         while (c.moveToNext()) {
-            sumDuration += c.getInt(c.getColumnIndexOrThrow(AnchorContract.AudioEntry.COLUMN_TIME));
-            sumCompletedTime += c.getInt(c.getColumnIndexOrThrow(AnchorContract.AudioEntry.COLUMN_COMPLETED_TIME));
+            sumDuration += c.getInt(c.getColumnIndexOrThrow(HearEraContract.AudioEntry.COLUMN_TIME));
+            sumCompletedTime += c.getInt(c.getColumnIndexOrThrow(HearEraContract.AudioEntry.COLUMN_COMPLETED_TIME));
         }
         c.close();
 
@@ -57,7 +57,7 @@ public class DBAccessUtils {
      * Delete track with the specified id from the database
      */
     public static boolean deleteTrackFromDB(Context context, long trackId) {
-        Uri deleteUri = ContentUris.withAppendedId(AnchorContract.AudioEntry.CONTENT_URI, trackId);
+        Uri deleteUri = ContentUris.withAppendedId(HearEraContract.AudioEntry.CONTENT_URI, trackId);
 
         // Don't allow delete action if the track still exists
         AudioFile audio = AudioFile.getAudioFileById(context, trackId);
@@ -75,8 +75,8 @@ public class DBAccessUtils {
      */
     public static boolean deleteAlbumFromDB(Context context, long albumId) {
         // Get the title of the album to check if the album still exists in the file system
-        Uri uri = ContentUris.withAppendedId(AnchorContract.AlbumEntry.CONTENT_URI, albumId);
-        String[] proj = new String[]{AnchorContract.AlbumEntry.COLUMN_TITLE};
+        Uri uri = ContentUris.withAppendedId(HearEraContract.AlbumEntry.CONTENT_URI, albumId);
+        String[] proj = new String[]{HearEraContract.AlbumEntry.COLUMN_TITLE};
         Cursor c = context.getContentResolver().query(uri, proj, null, null, null);
 
         // Bail early if the cursor is null
@@ -89,7 +89,7 @@ public class DBAccessUtils {
 
         String title = null;
         if (c.moveToNext()) {
-            title = c.getString(c.getColumnIndexOrThrow(AnchorContract.AlbumEntry.COLUMN_TITLE));
+            title = c.getString(c.getColumnIndexOrThrow(HearEraContract.AlbumEntry.COLUMN_TITLE));
         }
         c.close();
 
@@ -119,9 +119,9 @@ public class DBAccessUtils {
         }
 
         // Mark as not started
-        Uri uri = ContentUris.withAppendedId(AnchorContract.AudioEntry.CONTENT_URI, trackId);
+        Uri uri = ContentUris.withAppendedId(HearEraContract.AudioEntry.CONTENT_URI, trackId);
         ContentValues values = new ContentValues();
-        values.put(AnchorContract.AudioEntry.COLUMN_COMPLETED_TIME, 0);
+        values.put(HearEraContract.AudioEntry.COLUMN_COMPLETED_TIME, 0);
         context.getContentResolver().update(uri, values, null, null);
     }
 
@@ -138,11 +138,11 @@ public class DBAccessUtils {
         }
 
         // Get total time for the specified track
-        String[] columns = new String[]{AnchorContract.AudioEntry.COLUMN_TIME};
-        String sel = AnchorContract.AudioEntry._ID + "=?";
+        String[] columns = new String[]{HearEraContract.AudioEntry.COLUMN_TIME};
+        String sel = HearEraContract.AudioEntry._ID + "=?";
         String[] selArgs = {Long.toString(trackId)};
 
-        Cursor c = context.getContentResolver().query(AnchorContract.AudioEntry.CONTENT_URI,
+        Cursor c = context.getContentResolver().query(HearEraContract.AudioEntry.CONTENT_URI,
                 columns, sel, selArgs, null, null);
 
         // Bail early if the cursor is null
@@ -155,14 +155,14 @@ public class DBAccessUtils {
 
         int totalTime = 0;
         while (c.moveToNext()) {
-            totalTime = c.getInt(c.getColumnIndexOrThrow(AnchorContract.AudioEntry.COLUMN_TIME));
+            totalTime = c.getInt(c.getColumnIndexOrThrow(HearEraContract.AudioEntry.COLUMN_TIME));
         }
         c.close();
 
         // Set completedTime to totalTime
-        Uri uri = ContentUris.withAppendedId(AnchorContract.AudioEntry.CONTENT_URI, trackId);
+        Uri uri = ContentUris.withAppendedId(HearEraContract.AudioEntry.CONTENT_URI, trackId);
         ContentValues values = new ContentValues();
-        values.put(AnchorContract.AudioEntry.COLUMN_COMPLETED_TIME, totalTime);
+        values.put(HearEraContract.AudioEntry.COLUMN_COMPLETED_TIME, totalTime);
         context.getContentResolver().update(uri, values, null, null);
     }
 }

@@ -6,7 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.variksoid.hearera.data.AnchorContract;
+import com.variksoid.hearera.data.HearEraContract;
 
 import java.util.ArrayList;
 
@@ -17,10 +17,10 @@ public class Bookmark {
     private final long mAudioFileID;
 
     private static final String[] mBookmarkColumns = new String[]{
-            AnchorContract.BookmarkEntry._ID,
-            AnchorContract.BookmarkEntry.COLUMN_TITLE,
-            AnchorContract.BookmarkEntry.COLUMN_POSITION,
-            AnchorContract.BookmarkEntry.COLUMN_AUDIO_FILE
+            HearEraContract.BookmarkEntry._ID,
+            HearEraContract.BookmarkEntry.COLUMN_TITLE,
+            HearEraContract.BookmarkEntry.COLUMN_POSITION,
+            HearEraContract.BookmarkEntry.COLUMN_AUDIO_FILE
     };
 
     public Bookmark(long id, String title, long position, long audioFileID) {
@@ -55,7 +55,7 @@ public class Bookmark {
      */
     public long insertIntoDB(Context context) {
         ContentValues values = getContentValues();
-        Uri uri = context.getContentResolver().insert(AnchorContract.BookmarkEntry.CONTENT_URI, values);
+        Uri uri = context.getContentResolver().insert(HearEraContract.BookmarkEntry.CONTENT_URI, values);
 
         if (uri == null) {
             return -1;
@@ -72,7 +72,7 @@ public class Bookmark {
         if (mID == -1) {
             return ;
         }
-        Uri uri = ContentUris.withAppendedId(AnchorContract.BookmarkEntry.CONTENT_URI, mID);
+        Uri uri = ContentUris.withAppendedId(HearEraContract.BookmarkEntry.CONTENT_URI, mID);
         ContentValues values = getContentValues();
         context.getContentResolver().update(uri, values, null, null);
     }
@@ -82,9 +82,9 @@ public class Bookmark {
      */
     public ContentValues getContentValues() {
         ContentValues values = new ContentValues();
-        values.put(AnchorContract.BookmarkEntry.COLUMN_TITLE, mTitle);
-        values.put(AnchorContract.BookmarkEntry.COLUMN_POSITION, mPosition);
-        values.put(AnchorContract.BookmarkEntry.COLUMN_AUDIO_FILE, mAudioFileID);
+        values.put(HearEraContract.BookmarkEntry.COLUMN_TITLE, mTitle);
+        values.put(HearEraContract.BookmarkEntry.COLUMN_POSITION, mPosition);
+        values.put(HearEraContract.BookmarkEntry.COLUMN_AUDIO_FILE, mAudioFileID);
         return values;
     }
 
@@ -93,7 +93,7 @@ public class Bookmark {
      * Retrieve bookmark with given ID from database
      */
     static public Bookmark getBookmarkByID(Context context, long id) {
-        Uri uri = ContentUris.withAppendedId(AnchorContract.BookmarkEntry.CONTENT_URI, id);
+        Uri uri = ContentUris.withAppendedId(HearEraContract.BookmarkEntry.CONTENT_URI, id);
         Cursor c = context.getContentResolver().query(uri, mBookmarkColumns, null, null, null);
 
         // Bail early if the cursor is null
@@ -117,9 +117,9 @@ public class Bookmark {
      * Retrieve bookmark with the given title for the given audio file from database
      */
     static public Bookmark getBookmarkForAudioFileByTitle(Context context, String title, long audioFileID) {
-        String sel = AnchorContract.BookmarkEntry.COLUMN_AUDIO_FILE + "=? AND " + AnchorContract.BookmarkEntry.COLUMN_TITLE + "=?";
+        String sel = HearEraContract.BookmarkEntry.COLUMN_AUDIO_FILE + "=? AND " + HearEraContract.BookmarkEntry.COLUMN_TITLE + "=?";
         String[] selArgs = {Long.toString(audioFileID), title};
-        Cursor c = context.getContentResolver().query(AnchorContract.BookmarkEntry.CONTENT_URI, mBookmarkColumns, sel, selArgs, null);
+        Cursor c = context.getContentResolver().query(HearEraContract.BookmarkEntry.CONTENT_URI, mBookmarkColumns, sel, selArgs, null);
 
         // Bail early if the cursor is null
         if (c == null) {
@@ -143,9 +143,9 @@ public class Bookmark {
      * Delete all bookmarks with the given title from the database
      */
     static public void deleteBookmarksWithTitle(Context context, String title) {
-        String sel = AnchorContract.BookmarkEntry.COLUMN_TITLE + "=?";
+        String sel = HearEraContract.BookmarkEntry.COLUMN_TITLE + "=?";
         String[] selArgs = {title};
-        context.getContentResolver().delete(AnchorContract.BookmarkEntry.CONTENT_URI, sel, selArgs);
+        context.getContentResolver().delete(HearEraContract.BookmarkEntry.CONTENT_URI, sel, selArgs);
     }
 
     /*
@@ -153,10 +153,10 @@ public class Bookmark {
      */
     public static ArrayList<Bookmark> getAllBookmarksForAudioFile(Context context, long audioFileID) {
         ArrayList<Bookmark> bookmarks = new ArrayList<>();
-        String sel = AnchorContract.BookmarkEntry.COLUMN_AUDIO_FILE + "=?";
+        String sel = HearEraContract.BookmarkEntry.COLUMN_AUDIO_FILE + "=?";
         String[] selArgs = {Long.toString(audioFileID)};
 
-        Cursor c = context.getContentResolver().query(AnchorContract.BookmarkEntry.CONTENT_URI,
+        Cursor c = context.getContentResolver().query(HearEraContract.BookmarkEntry.CONTENT_URI,
                 mBookmarkColumns, sel, selArgs, null);
 
         // Bail early if the cursor is null
@@ -177,10 +177,10 @@ public class Bookmark {
     }
 
     private static Bookmark getBookmarkFromPositionedCursor(Cursor c) {
-        long id = c.getLong(c.getColumnIndexOrThrow(AnchorContract.BookmarkEntry._ID));
-        String title = c.getString(c.getColumnIndexOrThrow(AnchorContract.BookmarkEntry.COLUMN_TITLE));
-        long position = c.getLong(c.getColumnIndexOrThrow(AnchorContract.BookmarkEntry.COLUMN_POSITION));
-        long audioFileID = c.getLong(c.getColumnIndexOrThrow(AnchorContract.BookmarkEntry.COLUMN_AUDIO_FILE));
+        long id = c.getLong(c.getColumnIndexOrThrow(HearEraContract.BookmarkEntry._ID));
+        String title = c.getString(c.getColumnIndexOrThrow(HearEraContract.BookmarkEntry.COLUMN_TITLE));
+        long position = c.getLong(c.getColumnIndexOrThrow(HearEraContract.BookmarkEntry.COLUMN_POSITION));
+        long audioFileID = c.getLong(c.getColumnIndexOrThrow(HearEraContract.BookmarkEntry.COLUMN_AUDIO_FILE));
 
         return new Bookmark(id, title, position, audioFileID);
     }
@@ -189,9 +189,9 @@ public class Bookmark {
      * Get a cursor with all bookmarks for the given audio file
      */
     public static Cursor getBookmarksCursor(Context context, long audioFileID) {
-        String sel = AnchorContract.BookmarkEntry.COLUMN_AUDIO_FILE + "=?";
+        String sel = HearEraContract.BookmarkEntry.COLUMN_AUDIO_FILE + "=?";
         String[] selArgs = {Long.toString(audioFileID)};
-        String sortOrder = AnchorContract.BookmarkEntry.COLUMN_POSITION + " ASC";
-        return context.getContentResolver().query(AnchorContract.BookmarkEntry.CONTENT_URI, mBookmarkColumns, sel, selArgs, sortOrder);
+        String sortOrder = HearEraContract.BookmarkEntry.COLUMN_POSITION + " ASC";
+        return context.getContentResolver().query(HearEraContract.BookmarkEntry.CONTENT_URI, mBookmarkColumns, sel, selArgs, sortOrder);
     }
 }

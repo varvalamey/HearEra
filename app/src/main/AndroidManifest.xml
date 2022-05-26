@@ -42,7 +42,7 @@
         </activity>
 
         <provider
-            android:name=".data.AnchorProvider"
+            android:name=".data.HearEraProvider"
             android:authorities="${applicationId}"
             android:enabled="true"
             android:exported="false" />
